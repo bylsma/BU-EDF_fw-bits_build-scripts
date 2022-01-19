@@ -59,10 +59,10 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
 
 #Check for syntax errors
 set syntax_check_info [check_syntax -return_string]
-if {[string first "is not declared" ${syntax_check_info} ] > -1} {
-    puts ${syntax_check_info}
-    exit
-}
+#if {[string first "is not declared" ${syntax_check_info} ] > -1} {
+#    puts ${syntax_check_info}
+#    exit
+#}
 if {[string first "Syntax error" ${syntax_check_info}] > -1 } {
     error ${syntax_check_info}    
 }
