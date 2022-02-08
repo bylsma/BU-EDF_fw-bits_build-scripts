@@ -13,15 +13,18 @@ clean_address_tables:
 #################################################################################
 # address tables
 #################################################################################
-ADDRESS_TABLE ?= ${MAKE_PATH}/os/address_table/address_apollo.xml
+#ADDRESS_TABLE ?= ${MAKE_PATH}/os/address_table/address_apollo.xml
 
 
-${MAKE_PATH}/os/address_table/address_%.xml: ${MAKE_PATH}/os/slaves_%.yaml
-	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_$*.xml -o os/address_table/modules_$*/ -m modules_$*
+${MAKE_PATH}/os/address_table_%/address_apollo.xml: ${MAKE_PATH}/os/slaves_%.yaml
+	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_apollo.xml -o os/address_table_$*/modules_$*/ -m modules_$*
+	@rm -rf ${MAKE_PATH}/os/address_table
+	@ln -s ${MAKE_PATH}/os/address_table_$* ${MAKE_PATH}/os/address_table
+#	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_$*.xml -o os/address_table_$*/modules_$*/ -m modules_*$
 
-${MAKE_PATH}/os/address_table/address_apollo.xml: ${MAKE_PATH}/os/slaves.yaml
-	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_apollo.xml -o os/address_table/modules/ -m modules
+#${MAKE_PATH}/os/address_table/address_apollo.xml: ${MAKE_PATH}/os/slaves.yaml
+#	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_apollo.xml -o os/address_table/modules/ -m modules
 
-address_table: ${ADDRESS_TABLE}
+#address_table: ${ADDRESS_TABLE}
 
 .PHONY: address_table

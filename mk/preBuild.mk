@@ -15,7 +15,8 @@ clean_prebuild:
 # generate prebuilds for FPGA builds in config
 #################################################################################
 define PREBUILD_template =
- prebuild_$(1):  $(SLAVE_DTSI_PATH)/slaves_$(1).yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_$(1).yaml $(ADDSLAVE_TCL_PATH)/AddSlaves.tcl
+ prebuild_$(1):  $(SLAVE_DTSI_PATH)/slaves_$(1).yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_$(1).yaml
+# prebuild_$(1):  $(SLAVE_DTSI_PATH)/slaves_$(1).yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_$(1).yaml $(ADDSLAVE_TCL_PATH)/AddSlaves.tcl
 endef
 PREBUILDS=$(addprefix,prebuild_,$(CONFIGS))
 
@@ -30,8 +31,9 @@ else
        USE_SIMPLE_PARSER=-u True
 endif
 
-
+#$(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : ADDRESS_TABLE=${MAKE_PATH}/os/address_table_%/address_apollo.xml
 $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/slaves.yaml
+	@rm -f $(ADDRESS_TABLE_CREATION_PATH)/slaves*.yaml >& /dev/null
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
 	@mkdir -p $(SLAVE_DTSI_PATH)
 	@mkdir -p $(SLAVE_DEF_FILE_BASE)/$*/autogen
@@ -44,7 +46,9 @@ $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : 
                                              -m $(MAP_TEMPLATE_FILE) \
                                              $(USE_SIMPLE_PARSER) \
                                              -g $(CONFIGS_BASE_PATH)/$*/autogen
-	make address_table
+#	sym-link for base build
+#	@ln -s $(ADDRESS_TABLE_CREATION_PATH)/slaves_$*.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves.yaml
+	${MAKE} $(ADDRESS_TABLE_CREATION_PATH)address_table_$*/address_apollo.xml
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
 
