@@ -35,6 +35,7 @@ endif
 $(SLAVE_DTSI_PATH)/slaves_%.yaml $(ADDRESS_TABLE_CREATION_PATH)/slaves_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/slaves.yaml
 	@rm -f $(ADDRESS_TABLE_CREATION_PATH)/slaves*.yaml >& /dev/null
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
+	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)/address_table/
 	@mkdir -p $(SLAVE_DTSI_PATH)
 	@mkdir -p $(SLAVE_DEF_FILE_BASE)/$*/autogen
 	LD_LIBRARY_PATH=$(CACTUS_LD_PATH) ./build-scripts/preBuild.py \
