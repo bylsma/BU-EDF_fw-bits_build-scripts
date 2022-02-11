@@ -89,9 +89,10 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
     if 'UHAL_BASE' in slave:
         if 'XML' in slave:
             #update list dtsi files to look for (.dtsi_chunk or .dtsi_post_chunk)
-            dtsiYAML[fullName]=None
+            dtsiYAML[name]=None
             #update the address table file          
-            aTableYAML[fullName]={
+#            aTableYAML[fullName]={
+            aTableYAML[name]={
                 "UHAL_BASE":"0x"+hex(slave['UHAL_BASE'])[2:].zfill(8),
                 "XML":slave['XML']}
       
