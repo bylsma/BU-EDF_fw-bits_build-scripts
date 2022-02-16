@@ -15,7 +15,7 @@ update_compile_order -fileset sources_1
 synth_design -rtl
 
 #synth design
-synth_design -top $top -part $FPGA_part -flatten rebuilt
+synth_design -top $top -part $FPGA_part -flatten rebuilt -assert
 
 #Do any post synth commands
 global post_synth_commands 
