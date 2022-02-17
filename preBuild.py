@@ -118,7 +118,7 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
 
 
 
-def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFileName,map_template_file,pkg_template_file,autogen_path,useSimpleParser):
+def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, configFileName,map_template_file,pkg_template_file,autogen_path,useSimpleParser):
     # configure logger
     global log
 
@@ -132,12 +132,12 @@ def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFil
     aTableYAML = dict()
 
     #source slave yaml to drive the rest of the build
-    slavesFile=open(slavesFileName)
-    slaves=yaml.load(slavesFile)
-    for slave in slaves['AXI_SLAVES']:
+    configFile=open(configFileName)
+    config=yaml.load(configFile)
+    for slave in config['AXI_SLAVES']:
         #update all the files for this slave
         LoadSlave(slave,
-                  slaves["AXI_SLAVES"][slave],
+                  config["AXI_SLAVES"][slave],
                   dtsiYAML,
                   aTableYAML,
                   "",
@@ -161,10 +161,10 @@ def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFil
 if __name__ == "__main__":
     #command line
     parser = argparse.ArgumentParser(description="Create auto-generated files for the build system.")
-    parser.add_argument("--slavesFile","-s"      ,help="YAML file storing the slave info for generation",required=True)
-    parser.add_argument("--addSlaveTCLPath","-t" ,help="Path for AddSlaves.tcl",required=True)
+    parser.add_argument("--configFile","-s"      ,help="YAML file storing the slave info for generation",required=True)
+    parser.add_argument("--addSlaveTCLPath","-t" ,help="Path for AddConfig.tcl",required=True)
     parser.add_argument("--addressTablePath","-a",help="Path for address table generation yaml",required=True)
-    parser.add_argument("--addressTableFile","-f",help="filename for address table generation yaml",required=False,default="slaves.yaml")
+    parser.add_argument("--addressTableFile","-f",help="filename for address table generation yaml",required=False,default="config.yaml")
     parser.add_argument("--dtsiPath","-d"        ,help="Path for dtsi yaml",required=True)
     parser.add_argument("--mapTemplate","-m"        ,help="Path for map_template file",required=False)
     parser.add_argument("--pkgTemplate","-p"        ,help="Path for pkg_template file",required=False)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
          dtsiPath          = args.dtsiPath, 
          addressTablePath  = args.addressTablePath, 
          addressTableFile  = args.addressTableFile, 
-         slavesFileName    = args.slavesFile,
+         configFileName    = args.configFile,
          map_template_file = args.mapTemplate,
          pkg_template_file = args.pkgTemplate,
          autogen_path      = args.autogenPath,
