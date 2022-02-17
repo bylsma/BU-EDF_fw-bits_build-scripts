@@ -154,7 +154,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
         CMFile=open(CMyaml)
         remotes=yaml.load(CMFile)
         for remote in remotes:
-          filename="os/"+remote+"_slaves.yaml"
+          filename="os/"+remote+"_config.yaml"
           remoteSlaves.append(filename)
     except IOError:
       pass
@@ -206,16 +206,16 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build address table.")
-    parser.add_argument("--localSlavesYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
-    parser.add_argument("--remoteSlavesYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
-    parser.add_argument("--CM","-R"                   ,help="YAML file for CM sources used to set the remoteSlaves",required=False)  
+    parser.add_argument("--localConfigYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
+    parser.add_argument("--remoteConfigYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
+    parser.add_argument("--CM","-R"                   ,help="YAML file for CM sources used to set the remoteConfig",required=False)  
     parser.add_argument("--outputDir","-o"            ,help="Output directory",default="os/address_table/modules")
     parser.add_argument("--topName","-t"              ,help="top name for name.xml", default="address_apollo.xml")
     parser.add_argument("--modulesPath","-m"          ,help="what to rename the modules path to", default="modules")
     args=parser.parse_args()
     
-    main(args.localSlavesYAML,
-         args.remoteSlavesYAML,
+    main(args.localConfigYAML,
+         args.remoteConfigYAML,
          args.CM,
          args.outputDir,
          args.topName,
