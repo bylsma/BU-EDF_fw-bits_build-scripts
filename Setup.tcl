@@ -50,12 +50,6 @@ for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
 
 }
 
-#Add xdc files
-for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
-    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
-    read_xdc $filename
-    puts "Adding $filename"
-}
 
 #Check for syntax errors
 set syntax_check_info [check_syntax -return_string]
@@ -109,6 +103,13 @@ foreach bd_name [array names bd_files] {
     set bd_wrapper $bd_name
     append bd_wrapper "_wrapper.vhd"
     read_vhdl [get_files $bd_wrapper]       
+}
+
+#Add xdc files
+for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
+    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
+    read_xdc $filename
+    puts "Adding $filename"
 }
 
 

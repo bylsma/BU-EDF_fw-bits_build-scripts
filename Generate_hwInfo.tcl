@@ -1,5 +1,12 @@
 set hw_dir kernel/hw
 
+#re-Add xdc files
+for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
+    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
+    read_xdc $filename
+    puts "Adding $filename"
+}
+
 #create bit file
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 write_bitstream -force ${apollo_root_path}/bit/top_${build_name}.bit
