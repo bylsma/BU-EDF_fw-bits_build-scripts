@@ -1,4 +1,14 @@
-#!/bin/env python
+#!/bin/env python3
+
+
+#################################################################################                                                                                                             
+## Force python3                                                                                                                                                                              
+#################################################################################                                                                                                             
+import sys                                                                                                                                                                                    
+if not sys.version_info.major == 3:                                                                                                                                                           
+    raise BaseException("Wrong Python version detected.  Please ensure that you are using Python 3.")                                                                                         
+#################################################################################              
+
 import argparse
 import os
 import shutil
