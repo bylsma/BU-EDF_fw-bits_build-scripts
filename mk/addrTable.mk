@@ -18,12 +18,12 @@ ${MAKE_PATH}/os/address_table_%/ :
 	mkdir -p ${MAKE_PATH}/os/address_table_$*/
 
 ${MAKE_PATH}/os/address_table_%/address_apollo.xml: ${MAKE_PATH}/os/config_%.yaml ${MAKE_PATH}/os/address_table_%/
-	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_apollo.xml -o os/address_table_$*/modules_$*/ -m modules_$*
+	./build-scripts/BuildAddressTable.py -l $< -t address_apollo.xml -o os/address_table_$*/modules_$*/ -m modules_$*
 	@rm -rf ${MAKE_PATH}/os/address_table
 	@ln -s ${MAKE_PATH}/os/address_table_$* ${MAKE_PATH}/os/address_table
 
 ${MAKE_PATH}/os/address_table_%/address_%.xml: ${MAKE_PATH}/os/config_%.yaml ${MAKE_PATH}/os/address_table_%/
-	LD_LIBRARY_PATH+=/opt/cactus/lib ./build-scripts/BuildAddressTable.py -l $< -t address_$*.xml -o os/address_table_$*/modules_$*/ -m modules_$*
+	./build-scripts/BuildAddressTable.py -l $< -t address_$*.xml -o os/address_table_$*/modules_$*/ -m modules_$*
 	@rm -rf ${MAKE_PATH}/os/address_table
 	@ln -s ${MAKE_PATH}/os/address_table_$* ${MAKE_PATH}/os/address_table
 
