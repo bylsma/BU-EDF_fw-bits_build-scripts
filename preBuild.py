@@ -1,4 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+#################################################################################                                                                                                             
+## Force python3                                                                                                                                                                              
+#################################################################################                                                                                                             
+import sys                                                                                                                                                                                    
+if not sys.version_info.major == 3:                                                                                                                                                           
+    raise BaseException("Wrong Python version detected.  Please ensure that you are using Python 3.")                                                                                         
+#################################################################################              
 
 import argparse
 import sys
@@ -32,7 +39,7 @@ def str2bool(v):
 #Generate the MAP and PKG VHDL files for this slave
 #================================================================================
 def GenerateHDL(name,XMLFile,HDLPath,map_template_file,pkg_template_file,useSimpleParser):
-    print "Generate HDL for",name,"from",XMLFile
+    print("Generate HDL for"+name+"from"+XMLFile)
     
     #get working directory
     wd=os.getcwd()
