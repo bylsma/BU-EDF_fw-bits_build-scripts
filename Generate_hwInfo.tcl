@@ -14,7 +14,7 @@ write_bitstream -force ${apollo_root_path}/bit/top_${build_name}.bit
 #create hwdef file
 write_hwdef -file ${apollo_root_path}/${hw_dir}/top.hwdef -force
 
-if { [expr [package vcompare [version -short] 2019.2 ] >=0] } {
+if { [expr [package vcompare [version -short] 2019.2 ] < 0] } {
     # create the 
     write_sysdef -hwdef ${apollo_root_path}/${hw_dir}/top.hwdef -bit ${apollo_root_path}/bit/top.bit -file ${apollo_root_path}/${hw_dir}/top.hdf -force
 } else { 
