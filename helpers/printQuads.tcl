@@ -10,6 +10,9 @@ proc QUAD_print_pair {package_pin stream print_all} {
 	set pin_pair [get_property -quiet DIFF_PAIR_PIN ${package_pin}]
 	set name_N [get_ports -quiet -of_objects [get_package_pins -quiet ${pin_pair}]]
 	   
+	set site [get_sites -quiet [get_package_pins -quiet ${package_pin}]]
+	set function [get_property -quiet PIN_FUNC   ${package_pin}]
+	
 	#determine if this is a refclk or a TxRx pair
 	set IO_type ""    
 	if {[string first "REFCLK" [get_property -quiet PIN_FUNC ${package_pin}]] >= 0} {
@@ -34,7 +37,7 @@ proc QUAD_print_pair {package_pin stream print_all} {
 	
 	#print the final entry
 	if { [string length ${name_P}]} {
-	    puts ${stream} [format "     %-11s : %4s / %4s  :  %20s / %-20s " ${IO_type} ${package_pin} ${pin_pair} ${name_P} ${name_N}]
+	    puts ${stream} [format "     %-11s : %4s / %4s  :  %20s / %-20s (%-20s : %-20s)" ${IO_type} ${package_pin} ${pin_pair} ${name_P} ${name_N} ${site} ${function}]
 	}
     }
 }
