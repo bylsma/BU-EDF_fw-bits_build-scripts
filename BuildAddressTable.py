@@ -146,7 +146,8 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
           #copy XML files
           xmlFile=slaves['UHAL_MODULES'][slave]["XML"][iFile]
           try:
-            shutil.copyfile(os.path.abspath(xmlFile),outputDir+"/"+os.path.basename(xmlFile))
+#            shutil.copyfile(os.path.abspath(xmlFile),outputDir+"/"+os.path.basename(xmlFile))
+            shutil.copyfile(os.path.abspath(xmlFile),outputDir+"/"+xmlFile)
           except OSError:
             pass
           if iFile == 0:
