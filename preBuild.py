@@ -141,18 +141,19 @@ def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, configFil
     #source slave yaml to drive the rest of the build
     configFile=open(configFileName)
     config=yaml.load(configFile)
-    for slave in config['AXI_SLAVES']:
-        #update all the files for this slave
-        LoadSlave(slave,
-                  config["AXI_SLAVES"][slave],
-                  dtsiYAML,
-                  aTableYAML,
-                  "",
-                  map_template_file,
-                  pkg_template_file,                        
-                  useSimpleParser,
-                  autogen_path
-        )
+    if 'AXI_SLAVES' in config:
+        for slave in config['AXI_SLAVES']:
+            #update all the files for this slave
+            LoadSlave(slave,
+                      config["AXI_SLAVES"][slave],
+                      dtsiYAML,
+                      aTableYAML,
+                      "",
+                      map_template_file,
+                      pkg_template_file,                        
+                      useSimpleParser,
+                      autogen_path
+                      )
 
     dtsiYAML={"DTSI_CHUNKS": dtsiYAML}
     aTableYAML={"UHAL_MODULES": aTableYAML}

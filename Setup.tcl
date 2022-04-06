@@ -1,7 +1,7 @@
 # Non-project mode
 # collect files
 # run synthesis
-set_param general.maxThreads 10
+set_param general.maxThreads 8
 
 
 source ${apollo_root_path}/configs/${build_name}/settings.tcl
@@ -14,12 +14,12 @@ file mkdir $outputDir
 
 set projectDir ${apollo_root_path}/proj/
 file mkdir $projectDir
-if {[file isfile $projectDir/$top.xpr]} {
+if {[file isfile $projectDir/top.xpr]} {
     puts "Re-creating project file."
 } else {
     puts "Creating project file."
 }
-create_project -force -part $FPGA_part $top $projectDir
+create_project -force -part $FPGA_part top $projectDir
 set_property target_language VHDL [current_project]
 puts "Using dir $projectDir for FPGA part $FPGA_part"
 

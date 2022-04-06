@@ -3,10 +3,12 @@ source ${build_scripts_path}/helpers/printQuads.tcl
 #################################################################################
 # STEP#2: run synthesis, report utilization and timing estimates, write checkpoint design
 #################################################################################
-set_param general.maxThreads 10
+set_param general.maxThreads 8
 
-set_property synth_checkpoint_mode None [get_files $bd_name.bd]
-generate_target all [get_files "[get_bd_designs].bd"]
+if { [info exists bd_name] } {
+    set_property synth_checkpoint_mode None [get_files $bd_name.bd]
+    generate_target all [get_files "[get_bd_designs].bd"]
+}
 
 set_property source_mgmt_mode All [current_project]
 update_compile_order -fileset sources_1
@@ -18,11 +20,13 @@ synth_design -rtl
 synth_design -top $top -part $FPGA_part -flatten rebuilt -assert
 
 #Do any post synth commands
-global post_synth_commands 
-foreach cmd $post_synth_commands {
-    puts $cmd
-    eval $cmd
-}   
+if { [info exists post_synth_commands ] } {
+    global post_synth_commands
+    foreach cmd $post_synth_commands {
+	puts $cmd
+	eval $cmd
+    }
+}
 
 write_checkpoint -force $outputDir/post_synth
 
