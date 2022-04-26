@@ -25,7 +25,6 @@ puts "Using dir $projectDir for FPGA part $FPGA_part"
 
 source ${apollo_root_path}/configs/${build_name}/files.tcl
 
-
 #################################################################################
 # STEP#1: setup design sources and constraints
 #################################################################################
@@ -93,17 +92,22 @@ if { [info exists xci_files] == 1 } {
 
 
 #Add bd files
+#start_gui
 foreach bd_name [array names bd_files] {
     set filename "${apollo_root_path}/$bd_files($bd_name)"
     source $filename
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
+    start_gui
+    write_bd_layout -force -format svg -orientation portrait ${bd_name}.svg
+    stop_gui
     make_wrapper -files [get_files $bd_name.bd] -top -import -force
     set bd_wrapper $bd_name
     append bd_wrapper "_wrapper.vhd"
     read_vhdl [get_files $bd_wrapper]       
 }
+#stop_gui
 
 #Add xdc files
 for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
@@ -111,7 +115,6 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
     read_xdc $filename
     puts "Adding $filename"
 }
-
 
 #################################################################################
 # STEP#1: build

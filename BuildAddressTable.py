@@ -40,6 +40,7 @@ def AddAddressTableNode(name,slave,xmlTop,modulesPath):
   child = ET.SubElement(xmlTop,"node")
   child.set("id",name)
   child.set("address",slave['UHAL_BASE'])
+  child.set("fwinfo","uio_endpoint")
   if "XML" in slave:
     child.set("module",slave['XML'][0].replace("modules",modulesPath))
   if 'XML_MODE' in slave:
