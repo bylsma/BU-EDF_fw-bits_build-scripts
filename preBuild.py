@@ -90,7 +90,7 @@ def LoadSlave(name,slave,aTableYAML,parentName,map_template_file,pkg_template_fi
         if 'pkg_template' in slave['HDL']:
             pkg_template_file = "regmap_helper/templates/"+slave['HDL']['pkg_template']
 
-        GenerateHDL(fullName,slave['XML'][0],out_dir,map_template_file,pkg_template_file,useSimpleParser)
+        GenerateHDL(fullName,slave['XML'],out_dir,map_template_file,pkg_template_file,useSimpleParser)
     
     #generate yaml for the kernel and centos build
     if 'UHAL_BASE' in slave:

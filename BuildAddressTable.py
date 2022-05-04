@@ -19,6 +19,8 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree
 from xml.dom import minidom
 
+from lxml import etree
+from os.path import exists
 
 def RecreateDir(dir):
   try:
@@ -42,7 +44,7 @@ def AddAddressTableNode(name,slave,xmlTop,modulesPath):
   child.set("address",slave['UHAL_BASE'])
   child.set("fwinfo","uio_endpoint")
   if "XML" in slave:
-    child.set("module",slave['XML'][0].replace("modules",modulesPath))
+    child.set("module",slave['XML'].replace("modules",modulesPath))
   if 'XML_MODE' in slave:
     child.set("mode",slave['XML_MODE'])
   if 'XML_SIZE' in slave:
@@ -132,7 +134,42 @@ def BuildAddressTable(fileName,top):
         ATFile.write("/>\n")
     ATFile.write("</node>\n")
     
+def findXMLModules(path,currentElement):
+    included_files = []
+    for child in currentElement:
+        #get attributes
+        attributes = child.attrib
+        #keep track of path needed for the next recursive call to findXMLModules
+        sub_path=path
+        
+        if "module" in attributes:
+            #This node has a module attribute, load and follow it
+            module_file = attributes["module"].replace("file://", "")
+            #This module is in a sub-path, so update sub_path for this search
+            if len(os.path.dirname(module_file)) > 0:
+                   sub_path=path+"/"+os.path.dirname(module_file)
 
+            module_file = os.path.basename(module_file)
+            module_file = sub_path+"/"+module_file
+            #check if this file really exists
+            if not exists(module_file):
+                raise BaseException("File "+module_file+" not found")
+            #open file, read in XML, get the current XML node and process it.
+            f = open(module_file, "rb")
+            parser = etree.XMLParser(remove_comments=True)
+            tree = etree.parse(f, parser=parser)
+            root = tree.getroot()
+            f.close()
+            #add the new file found to the list of files
+            included_files.extend([module_file])
+            #add any files found while searching the new file
+            included_files.extend(findXMLModules(sub_path,root))
+        else:
+            #this isn't a module, but see if it has any children that might
+            included_files.extend(findXMLModules(sub_path,child))
+        
+    return included_files
+    
 def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #address table top node
     top = ET.Element("node",{"id":"top"})
@@ -143,21 +180,43 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     slaves=yaml.load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
       if "XML" in slaves['UHAL_MODULES'][slave]:
-        for iFile in range(0,len(slaves['UHAL_MODULES'][slave]["XML"])):
-          #copy XML files
-          xmlFile=slaves['UHAL_MODULES'][slave]["XML"][iFile]
-          try:
-#            shutil.copyfile(os.path.abspath(xmlFile),outputDir+"/"+os.path.basename(xmlFile))
-            shutil.copyfile(os.path.abspath(xmlFile),outputDir+"/"+xmlFile)
-          except OSError:
-            pass
-          if iFile == 0:
-            relPath=slaves['UHAL_MODULES'][slave]['XML'][iFile]
-            relPath=relPath[relPath.find("module"):]
-            slaves['UHAL_MODULES'][slave]['XML'][iFile] = relPath
+       #get the full file path and the base path
+        module_file=os.path.abspath(slaves['UHAL_MODULES'][slave]["XML"])
+        module_base_path=os.path.dirname(module_file)
 
+        #start the list of files needed for this address table element
+        module_files=[module_file]
         
-        AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top,modulesPath)
+        if not exists(module_file):
+            raise BaseException("File "+module_file+" not found")
+
+        #open the XML file and start parsing it
+        f = open(module_file, "rb")
+        parser = etree.XMLParser(remove_comments=True)
+        tree = etree.parse(f, parser=parser)
+        root = tree.getroot()
+        f.close()
+        #search through all the children of this node and fine all the include files from module attributes
+        module_files.extend(findXMLModules(os.path.dirname(module_file)+"/",root))
+        
+        #hacky way of removing duplicates from the list
+        file_list = []
+        for i in module_files:
+            if i != []:
+                if i not in file_list:
+                    file_list.append(i)
+
+        #copy all the files to their final destination
+        for iFile in file_list:
+            src_path = iFile
+            dest_path = outputDir+iFile.replace(module_base_path,"/")
+            if not exists(os.path.dirname(dest_path)):
+                os.makedirs(os.path.dirname(dest_path))
+            shutil.copyfile(src_path,dest_path)        
+      else:
+          print(module_file+" does not exist")          
+
+      AddAddressTableNode(slave,slaves['UHAL_MODULES'][slave],top,modulesPath)
 
     remoteSlaves = list()
     #append CM.yaml remote slaves
@@ -221,7 +280,7 @@ if __name__ == "__main__":
     parser.add_argument("--localConfigYAML","-l"      ,help="YAML file storing the slave info for generation",required=True)
     parser.add_argument("--remoteConfigYAML","-r"     ,help="YAML file storing remote locations of slave info for generation",required=False,action='append')
     parser.add_argument("--CM","-R"                   ,help="YAML file for CM sources used to set the remoteConfig",required=False)  
-    parser.add_argument("--outputDir","-o"            ,help="Output directory",default="os/address_table/modules")
+    parser.add_argument("--outputDir","-o"            ,help="Output directory",default="kernel/address_table/modules")
     parser.add_argument("--topName","-t"              ,help="top name for name.xml", default="address_apollo.xml")
     parser.add_argument("--modulesPath","-m"          ,help="what to rename the modules path to", default="modules")
     args=parser.parse_args()
