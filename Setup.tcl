@@ -56,9 +56,9 @@ set syntax_check_info [check_syntax -return_string]
 #    puts ${syntax_check_info}
 #    exit
 #}
-if {[string first "Syntax error" ${syntax_check_info}] > -1 } {
-    error ${syntax_check_info}    
-}
+#if {[string first "Syntax error" ${syntax_check_info}] > -1 } {
+#    error ${syntax_check_info}    
+#}
 
 
 
@@ -87,7 +87,7 @@ if { [info exists xci_files] == 1 } {
     puts "Generating target all on ${ip_list}"
     generate_target all [get_ips $ip_name]  
     puts "Running synth on ${ip_list}"
-    synth_ip ${ip_list}
+#    synth_ip ${ip_list}
 }
 
 
