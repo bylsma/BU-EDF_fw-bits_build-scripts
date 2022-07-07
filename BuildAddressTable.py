@@ -60,6 +60,7 @@ def BuildAddressTable(fileName,top):
     moduleLen = 0
     modeLen = 0
     sizeLen = 0
+    fwinfoLen = 0
     #find the max length of each type of attribute is
     for child in top:      
         size=len(child.get('id'))
@@ -81,13 +82,19 @@ def BuildAddressTable(fileName,top):
             size=len(hex(child.get('size')))
             if(size > sizeLen):
                 sizeLen=size
+        if(child.get('fwinfo')):
+            size=len(child.get('fwinfo'))
+            if(size > fwinfoLen):
+                fwinfoLen=size
+        
   
-    #add the length of the attribute name for padding
+    #add the length of the attribute name for padding (name + "=" + quote chars)
     idLen+=5+1
     addrLen+=10+1
     moduleLen+=9+1
     modeLen+=7+1
     sizeLen+=7+1
+    fwinfoLen+=7+1 
   
     #reorder data by uhal address
     top[:] = sorted(top,key=lambda child: (child.tag,child.get('address')))
@@ -109,10 +116,20 @@ def BuildAddressTable(fileName,top):
         else:
             ATFILE.write(" ".ljust(addrLen))
         ATFile.write(" ")
+
+        #print the fwinfo if it exists
+        if(child.get('fwinfo')):
+            ATFile.write((" fwinfo=\""+child.get('fwinfo')+"\"").ljust(addrLen))
+        else:
+            ATFILE.write(" ".ljust(addrLen))
+        ATFile.write(" ")
         
         #print the module if it exists
         if(child.get('module')):
-            ATFile.write((" module=\"file://"+child.get('module')+"\"").ljust(moduleLen))
+            filepath=child.get('module')
+            if filepath.startswith("address_table/"):
+                filepath= filepath[len("address_table/"):]
+            ATFile.write((" module=\"file://"+filepath+"\"").ljust(moduleLen))
         else:
             ATFile.write(" ".ljust(moduleLen))
         ATFile.write(" ")      
@@ -263,7 +280,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     connFile.write('\n')
     connFile.write('<connections>\n')
     connFile.write('  <!-- be sure to use the same file in both "uri" and "address_table" -->\n')
-    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///opt/address_table/'+topName+'"                     address_table="file:///opt/address_table/'+topName+'" />\n')
+    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///fw/address_table/'+topName+'"                     address_table="file:///fw/address_table/'+topName+'" />\n')
     connFile.write('</connections>\n')
     connFile.close()
 
