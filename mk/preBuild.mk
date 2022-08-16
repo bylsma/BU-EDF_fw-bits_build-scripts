@@ -26,11 +26,11 @@ else
 endif
 
 $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/config.yaml
-	@yamllint -d "{extends: default,rules: {document-start: false,trailing-spaces: false,line-length: false,empty-lines: false}}" $<
+	@yamllint -d "{extends: default,rules: {document-start: false,trailing-spaces: false,line-length: false,empty-lines: false,colons:  {max-spaces-before: -1, max-spaces-after: -1}}}" $<
 	@rm -f $(ADDRESS_TABLE_CREATION_PATH)config*.yaml >& /dev/null
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)address_tables/
-	@mkdir -p $(KERNEL_BUILD_PATH)
+	@mkdir -p $(KERNEL_BUILD_PATH) || :
 	@mkdir -p $(SLAVE_DEF_FILE_BASE)/$*/autogen
 	LD_LIBRARY_PATH=$(CACTUS_LD_PATH) ./build-scripts/preBuild.py \
 			                     -s $^ \

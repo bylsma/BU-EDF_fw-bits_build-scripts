@@ -87,7 +87,7 @@ if { [info exists xci_files] == 1 } {
     puts "Generating target all on ${ip_list}"
     generate_target all [get_ips $ip_name]  
     puts "Running synth on ${ip_list}"
-#    synth_ip ${ip_list}
+    synth_ip ${ip_list}
 }
 
 
