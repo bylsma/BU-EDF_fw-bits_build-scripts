@@ -8,7 +8,7 @@ if {$argc == 3} {
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
     set autogen_path configs/${build_name}/autogen
-} if {$argc == 2} {
+} elseif {$argc == 2} {
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
 } elseif {$argc == 1} {
