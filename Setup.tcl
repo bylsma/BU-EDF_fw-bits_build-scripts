@@ -112,8 +112,6 @@ for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
     puts "Adding $filename"
 }
 
-#Add HAL
-source ${build_scripts_path}/HAL_1.tcl
 
 #################################################################################
 # STEP#1: build
