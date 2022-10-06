@@ -7,24 +7,26 @@ puts $argv
 
 if { $argc == 4 } {
     set do_not_print_layout     [lindex $argv 3]
-    puts "do not print is "
-    puts do_not_print_layout
     set build_name       [lindex $argv 2]
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
 } elseif {$argc == 3} {
+    set do_not_print_layout     0
     set build_name       [lindex $argv 2]
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
 } elseif {$argc == 2} {
+    set do_not_print_layout     0
     set build_name "xc7z035"
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
 } elseif {$argc == 1} {
+    set do_not_print_layout     0
     set build_name "xc7z035"
     set apollo_root_path [lindex $argv 0]
     set build_scripts_path ${apollo_root_path}/build-scripts
 } else {
+    set do_not_print_layout     0
     set build_name "xc7z035"
     set apollo_root_path ".."
     set build_scripts_path ${apollo_root_path}/build-scripts

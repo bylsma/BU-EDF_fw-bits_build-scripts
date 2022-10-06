@@ -99,7 +99,7 @@ foreach bd_name [array names bd_files] {
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
-    if { [info exists do_not_print_layout] } {
+    if { $do_not_print_layout == 1 } {
 	puts "INFO: DO_NOT_PRINT_LAYOUT flag is set, not runnig write_bd_layout"
     } else {
 	start_gui
