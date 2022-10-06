@@ -99,9 +99,13 @@ foreach bd_name [array names bd_files] {
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
-    start_gui
-    write_bd_layout -force -format svg -orientation portrait ${bd_name}.svg
-    stop_gui
+    if { [info exists do_not_print_layout] } {
+	puts "INFO: DO_NOT_PRINT_LAYOUT flag is set, not runnig write_bd_layout"
+    } else {
+	start_gui
+	write_bd_layout -force -format svg -orientation portrait ${bd_name}.svg
+	stop_gui
+    }
     make_wrapper -files [get_files $bd_name.bd] -top -import -force
     set bd_wrapper $bd_name
     append bd_wrapper "_wrapper.vhd"
