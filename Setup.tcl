@@ -99,12 +99,12 @@ foreach bd_name [array names bd_files] {
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
-    if { $do_not_print_layout == 1 } {
-	puts "INFO: DO_NOT_PRINT_LAYOUT flag is set, not runnig write_bd_layout"
-    } else {
-	start_gui
-	write_bd_layout -force -format svg -orientation portrait ${bd_name}.svg
-	stop_gui
+    if { [catch start_gui] == 0 } { 
+        puts "INFO: gui successfully opened, writing block design layout"
+        write_bd_layout -force -format svg -orientation portrait ${BD_OUTPUT_PATH}/${fpga_shortname}/c2cSlave/c2cSlave.svg
+        stop_gui
+    } else { 
+        puts "INFO: gui did not open, skip write block design layout"
     }
     make_wrapper -files [get_files $bd_name.bd] -top -import -force
     set bd_wrapper $bd_name
