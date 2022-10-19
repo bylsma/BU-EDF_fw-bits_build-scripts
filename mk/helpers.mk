@@ -39,7 +39,7 @@ NOTIFY_DAN_BAD:
 #all grep commands need || true because not finding a match is an error and breaks the make rule
 list:
 	@echo
-	@echo Apollo CM config:
+	@echo Build config:
 	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]] || true | grep -v prebuild || true | grep -v clean || true | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' || true | column -c 150
 	@echo
 	@echo Prebuilds:
