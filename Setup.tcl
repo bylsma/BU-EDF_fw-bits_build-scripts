@@ -92,7 +92,6 @@ if { [info exists xci_files] == 1 } {
 
 
 #Add bd files
-#start_gui
 foreach bd_name [array names bd_files] {
     set filename "${apollo_root_path}/$bd_files($bd_name)"
     source $filename
@@ -101,7 +100,7 @@ foreach bd_name [array names bd_files] {
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     if { [catch start_gui] == 0 } { 
         puts "INFO: gui successfully opened, writing block design layout"
-        write_bd_layout -force -format svg -orientation portrait ${BD_OUTPUT_PATH}/${fpga_shortname}/c2cSlave/c2cSlave.svg
+        write_bd_layout -quiet -force -format svg -orientation portrait ../doc/${build_name}_${bd_name}.svg
         stop_gui
     } else { 
         puts "INFO: gui did not open, skip write block design layout"
@@ -111,7 +110,7 @@ foreach bd_name [array names bd_files] {
     append bd_wrapper "_wrapper.vhd"
     read_vhdl [get_files $bd_wrapper]       
 }
-#stop_gui
+
 
 #Add xdc files
 for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
