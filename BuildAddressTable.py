@@ -194,7 +194,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #local slaves
     RecreateDir(outputDir)
     slavesFile=open(localSlavesYAML)
-    slaves=yaml.load(slavesFile)
+    slaves=yaml.safe_load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
       if "XML" in slaves['UHAL_MODULES'][slave]:
        #get the full file path and the base path
