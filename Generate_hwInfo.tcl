@@ -1,4 +1,4 @@
-set hw_dir kernel/hw
+set hw_dir kernel/hw/${build_name}
 
 #re-Add xdc files
 #for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
@@ -29,7 +29,7 @@ if { [expr [package vcompare [version -short] 2019.2 ] < 0] } {
 
 
 #create any debugging files
-write_debug_probes -force ${apollo_root_path}/bit/top.ltx                                                                
+write_debug_probes -force ${apollo_root_path}/bit/top_${build_name}.ltx                                                                
 
 if { [expr {![catch {file lstat ${apollo_root_path}/configs/${build_name}/Generate_svf.tcl finfo}]}] } {
     source  ${apollo_root_path}/configs/${build_name}/Generate_svf.tcl
