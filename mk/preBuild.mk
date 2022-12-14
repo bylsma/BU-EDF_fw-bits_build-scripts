@@ -39,7 +39,7 @@ $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/config.ya
                                              -m $(MAP_TEMPLATE_FILE) \
                                              $(USE_SIMPLE_PARSER) \
                                              -g $(CONFIGS_BASE_PATH)/$*/autogen
-	${MAKE} $(ADDRESS_TABLE_CREATION_PATH)address_tables/address_table_$*/address_apollo.xml
+#
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
 
