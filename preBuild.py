@@ -1,4 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+#################################################################################                                                                                                             
+## Force python3                                                                                                                                                                              
+#################################################################################                                                                                                             
+import sys                                                                                                                                                                                    
+if not sys.version_info.major == 3:                                                                                                                                                           
+    raise BaseException("Wrong Python version detected.  Please ensure that you are using Python 3.")                                                                                         
+#################################################################################              
 
 import argparse
 import sys
@@ -32,7 +39,7 @@ def str2bool(v):
 #Generate the MAP and PKG VHDL files for this slave
 #================================================================================
 def GenerateHDL(name,XMLFile,HDLPath,map_template_file,pkg_template_file,useSimpleParser):
-    print "Generate HDL for",name,"from",XMLFile
+    print("Generate HDL for"+name+"from"+XMLFile)
     
     #get working directory
     wd=os.getcwd()
@@ -53,7 +60,7 @@ def GenerateHDL(name,XMLFile,HDLPath,map_template_file,pkg_template_file,useSimp
 #================================================================================
 #process a single slave (or tree us sub-slaves) and update all the output files
 #================================================================================
-def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_template_file,useSimpleParser,autogen_path="./"):
+def LoadSlave(name,slave,aTableYAML,parentName,map_template_file,pkg_template_file,useSimpleParser,autogen_path="./"):
     
     fullName=str(name)
     
@@ -83,15 +90,13 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
         if 'pkg_template' in slave['HDL']:
             pkg_template_file = "regmap_helper/templates/"+slave['HDL']['pkg_template']
 
-        GenerateHDL(fullName,slave['XML'][0],out_dir,map_template_file,pkg_template_file,useSimpleParser)
+        GenerateHDL(fullName,slave['XML'],out_dir,map_template_file,pkg_template_file,useSimpleParser)
     
     #generate yaml for the kernel and centos build
     if 'UHAL_BASE' in slave:
         if 'XML' in slave:
-            #update list dtsi files to look for (.dtsi_chunk or .dtsi_post_chunk)
-            dtsiYAML[fullName]=None
             #update the address table file          
-            aTableYAML[fullName]={
+            aTableYAML[name]={
                 "UHAL_BASE":"0x"+hex(slave['UHAL_BASE'])[2:].zfill(8),
                 "XML":slave['XML']}
       
@@ -104,7 +109,6 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
             for subSlave in slave['SUB_SLAVES']:
                 LoadSlave(subSlave,
                           slave['SUB_SLAVES'][subSlave],
-                          dtsiYAML,
                           aTableYAML,
                           fullName,
                           map_template_file,
@@ -117,27 +121,23 @@ def LoadSlave(name,slave,dtsiYAML,aTableYAML,parentName,map_template_file,pkg_te
 
 
 
-def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFileName,map_template_file,pkg_template_file,autogen_path,useSimpleParser):
+def main(addressTablePath,addressTableFile, configFileName,map_template_file,pkg_template_file,autogen_path,useSimpleParser):
     # configure logger
     global log
 
     
-    #dtsi yaml file
-    dtsiYAMLFile=open(dtsiPath+"/"+addressTableFile,"w")
-    dtsiYAML = dict()
 
     #address table yaml file
     addressTableYAMLFile=open(addressTablePath+"/"+addressTableFile,"w")
     aTableYAML = dict()
 
     #source slave yaml to drive the rest of the build
-    slavesFile=open(slavesFileName)
-    slaves=yaml.load(slavesFile)
-    for slave in slaves['AXI_SLAVES']:
+    configFile=open(configFileName)
+    config=yaml.safe_load(configFile)
+    for slave in config['AXI_SLAVES']:
         #update all the files for this slave
         LoadSlave(slave,
-                  slaves["AXI_SLAVES"][slave],
-                  dtsiYAML,
+                  config["AXI_SLAVES"][slave],
                   aTableYAML,
                   "",
                   map_template_file,
@@ -146,12 +146,8 @@ def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFil
                   autogen_path
         )
 
-    dtsiYAML={"DTSI_CHUNKS": dtsiYAML}
     aTableYAML={"UHAL_MODULES": aTableYAML}
   
-    dtsiYAMLFile.write(yaml.dump(dtsiYAML,
-                                 Dumper=MyDumper,
-                                 default_flow_style=False))
     addressTableYAMLFile.write(yaml.dump(aTableYAML,
                                          Dumper=MyDumper,
                                          default_flow_style=False))
@@ -160,21 +156,18 @@ def main(addSlaveTCLPath, dtsiPath, addressTablePath,addressTableFile, slavesFil
 if __name__ == "__main__":
     #command line
     parser = argparse.ArgumentParser(description="Create auto-generated files for the build system.")
-    parser.add_argument("--slavesFile","-s"      ,help="YAML file storing the slave info for generation",required=True)
-    parser.add_argument("--addSlaveTCLPath","-t" ,help="Path for AddSlaves.tcl",required=True)
+    parser.add_argument("--configFile","-s"      ,help="YAML file storing the slave info for generation",required=True)
     parser.add_argument("--addressTablePath","-a",help="Path for address table generation yaml",required=True)
-    parser.add_argument("--addressTableFile","-f",help="filename for address table generation yaml",required=False,default="slaves.yaml")
-    parser.add_argument("--dtsiPath","-d"        ,help="Path for dtsi yaml",required=True)
+    parser.add_argument("--addressTableFile","-f",help="filename for address table generation yaml",required=False,default="config.yaml")
     parser.add_argument("--mapTemplate","-m"        ,help="Path for map_template file",required=False)
     parser.add_argument("--pkgTemplate","-p"        ,help="Path for pkg_template file",required=False)
     parser.add_argument("--autogenPath","-g"        ,help="Base path for autogenerated files",required=True)
     parser.add_argument("--useSimpleParser","-u"        ,type=str2bool,help="Use simple parser",required=False,default=True)
     args=parser.parse_args()
-    main(addSlaveTCLPath   = args.addSlaveTCLPath, 
-         dtsiPath          = args.dtsiPath, 
+    main(
          addressTablePath  = args.addressTablePath, 
          addressTableFile  = args.addressTableFile, 
-         slavesFileName    = args.slavesFile,
+         configFileName    = args.configFile,
          map_template_file = args.mapTemplate,
          pkg_template_file = args.pkgTemplate,
          autogen_path      = args.autogenPath,

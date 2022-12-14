@@ -25,7 +25,6 @@ puts "Using dir $projectDir for FPGA part $FPGA_part"
 
 source ${apollo_root_path}/configs/${build_name}/files.tcl
 
-
 #################################################################################
 # STEP#1: setup design sources and constraints
 #################################################################################
@@ -50,22 +49,16 @@ for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
 
 }
 
-#Add xdc files
-for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
-    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
-    read_xdc $filename
-    puts "Adding $filename"
-}
 
 #Check for syntax errors
 set syntax_check_info [check_syntax -return_string]
-if {[string first "is not declared" ${syntax_check_info} ] > -1} {
-    puts ${syntax_check_info}
-    exit
-}
-if {[string first "Syntax error" ${syntax_check_info}] > -1 } {
-    error ${syntax_check_info}    
-}
+#if {[string first "is not declared" ${syntax_check_info} ] > -1} {
+#    puts ${syntax_check_info}
+#    exit
+#}
+#if {[string first "Syntax error" ${syntax_check_info}] > -1 } {
+#    error ${syntax_check_info}    
+#}
 
 
 
@@ -105,12 +98,26 @@ foreach bd_name [array names bd_files] {
     puts "Running $filename"
     read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
     open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
+    if { [catch start_gui] == 0 } { 
+        puts "INFO: gui successfully opened, writing block design layout"
+        write_bd_layout -quiet -force -format svg -orientation portrait ../doc/${build_name}_${bd_name}.svg
+        stop_gui
+    } else { 
+        puts "INFO: gui did not open, skip write block design layout"
+    }
     make_wrapper -files [get_files $bd_name.bd] -top -import -force
     set bd_wrapper $bd_name
     append bd_wrapper "_wrapper.vhd"
     read_vhdl [get_files $bd_wrapper]       
 }
 
+
+#Add xdc files
+for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
+    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
+    read_xdc $filename
+    puts "Adding $filename"
+}
 
 #################################################################################
 # STEP#1: build
