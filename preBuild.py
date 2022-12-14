@@ -133,7 +133,7 @@ def main(addressTablePath,addressTableFile, configFileName,map_template_file,pkg
 
     #source slave yaml to drive the rest of the build
     configFile=open(configFileName)
-    config=yaml.load(configFile)
+    config=yaml.safe_load(configFile)
     for slave in config['AXI_SLAVES']:
         #update all the files for this slave
         LoadSlave(slave,
