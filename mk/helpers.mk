@@ -39,7 +39,8 @@ NOTIFY_DAN_BAD:
 list:
 	@echo
 	@echo Apollo CM config:
-	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]] | grep -v prebuild | grep -v clean | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column -c 150
+#	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep rev[[:digit:]] | grep -v prebuild | grep -v clean | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column -c 150
+	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep -v "all" | grep -v "bit" | grep -v "list" | grep -v "open" | grep -v init | grep -v interactive | grep -v make | grep -v "NOTIFY" | grep -v overlays | grep -v SVF | grep -v test |  grep -v prebuild | grep -v clean | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column -c 150
 	@echo
 	@echo Prebuilds:
 	@$(MAKE) -pRrq -f $(MAKEFILE_LIST) | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | grep prebuild_ | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | column -c 150
