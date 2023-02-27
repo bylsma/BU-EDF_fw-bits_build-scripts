@@ -22,3 +22,13 @@ ${ADDRESS_TABLE_CREATION_PATH}address_tables/address_table_%/address_%.xml: ${AD
 	@ln -s address_tables/address_table_$* ${ADDRESS_TABLE_CREATION_PATH}address_tables/address_table
 
 
+#################################################################################
+# simple generate rules for address tables
+#################################################################################
+define ADDRESS_TABLE_template =
+ address_table_$(1):  ${ADDRESS_TABLE_CREATION_PATH}address_tables/address_table_$(1)/address_$(1).xml
+endef
+ADRESSTABLEBUILDS=$(addprefix,address_table_,$(CONFIGS))
+$(foreach addresstable,$(CONFIGS),$(eval $(call ADDRESS_TABLE_template,$(addresstable))))
+
+
