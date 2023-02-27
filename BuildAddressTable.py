@@ -197,7 +197,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #local slaves
     RecreateDir(outputDir)
     slavesFile=open(localSlavesYAML)
-    slaves=yaml.load(slavesFile)
+    slaves=yaml.safe_load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
       if "XML" in slaves['UHAL_MODULES'][slave]:
        #get the full file path and the base path
@@ -254,7 +254,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     try:
       if type(CMyaml) == type('  '):
         CMFile=open(CMyaml)
-        remotes=yaml.load(CMFile)
+        remotes=yaml.safe_load(CMFile)
         for remote in remotes:
           filename="os/"+remote+"_config.yaml"
           remoteSlaves.append(filename)
@@ -268,7 +268,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #go through all found remote slaves
     for CM in remoteSlaves:
       slavesFile=open(CM)
-      slaves=yaml.load(slavesFile)
+      slaves=yaml.safe_load(slavesFile)
       
       nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
 

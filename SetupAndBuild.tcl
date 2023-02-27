@@ -5,7 +5,7 @@
 puts $argc
 puts $argv
 
-if { $argc == 3 } {
+if {$argc == 3} {
     set build_name       [lindex $argv 2]
     set build_scripts_path [lindex $argv 1]
     set apollo_root_path [lindex $argv 0]
