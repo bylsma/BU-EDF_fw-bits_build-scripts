@@ -9,6 +9,9 @@ DTBO_FILES = $(patsubst %.dtsi,${DTBO_PATH}/%.dtbo,${DTSI_FILES})
 
 overlays: ${DTBO_FILES}
 
+clean_overlays:
+	@rm -rf ${DTSI_PATH} >& /dev/null
+
 ${DTBO_PATH}/%.dtbo:${DTSI_PATH}/%.dtsi
 	mkdir -p ${DTBO_PATH} >& /dev/null
 	dtc -O dtb -o $@ -b 0 -@ $<
