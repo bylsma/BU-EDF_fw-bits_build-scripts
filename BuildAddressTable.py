@@ -280,7 +280,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     connFile.write('\n')
     connFile.write('<connections>\n')
     connFile.write('  <!-- be sure to use the same file in both "uri" and "address_table" -->\n')
-    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///fw/address_table/'+topName+'"                     address_table="file:///fw/address_table/'+topName+'" />\n')
+    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0://'+topName+'"                     address_table="file://'+topName+'" />\n')
     connFile.write('</connections>\n')
     connFile.close()
 
