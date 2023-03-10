@@ -62,7 +62,7 @@ def BuildAddressTable(fileName,top):
     sizeLen = 0
     fwinfoLen = 0
     #find the max length of each type of attribute is
-    for child in top:      
+    for child in top:        
         size=len(child.get('id'))
         if(size > idLen):
             idLen=size
@@ -71,6 +71,7 @@ def BuildAddressTable(fileName,top):
             if(size > addrLen):
                 addrLen=size
         if(child.get('module')):
+            print("Module: "+child.get('module'))
             size=len(child.get('module'))
             if(size > moduleLen):
                 moduleLen=size
@@ -163,11 +164,13 @@ def findXMLModules(path,currentElement):
             #This node has a module attribute, load and follow it
             module_file = attributes["module"].replace("file://", "")
             #This module is in a sub-path, so update sub_path for this search
-            if len(os.path.dirname(module_file)) > 0:
+            print("Initial: "+module_file)
+            if len(os.path.dirname(module_file)) > 0 and module_file[0] != "/":
                    sub_path=path+"/"+os.path.dirname(module_file)
 
             module_file = os.path.basename(module_file)
-            module_file = sub_path+"/"+module_file
+            if len(module_file) > 0 and module_file[0] != "/" :
+                module_file = sub_path+"/"+module_file
             #check if this file really exists
             if not exists(module_file):
                 raise BaseException("File "+module_file+" not found")
@@ -194,7 +197,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #local slaves
     RecreateDir(outputDir)
     slavesFile=open(localSlavesYAML)
-    slaves=yaml.load(slavesFile)
+    slaves=yaml.safe_load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
       if "XML" in slaves['UHAL_MODULES'][slave]:
        #get the full file path and the base path
@@ -229,7 +232,18 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
             dest_path = outputDir+iFile.replace(module_base_path,"/")
             if not exists(os.path.dirname(dest_path)):
                 os.makedirs(os.path.dirname(dest_path))
-            shutil.copyfile(src_path,dest_path)        
+            print("Copying %s to %s" % (src_path,dest_path));
+            shutil.copyfile(src_path,dest_path)
+
+
+        #update the module path for its new location        
+        if len(file_list) == 0:
+            print("No XML files!")
+            continue
+        #replace the full path of the destination file (already copied) with /modules
+        #The module part will be updated by AddAddressTableNode to the final path
+        slaves['UHAL_MODULES'][slave]["XML"] = file_list[0].replace(module_base_path,
+                                                                    "modules")
       else:
           print(module_file+" does not exist")          
 
@@ -240,7 +254,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     try:
       if type(CMyaml) == type('  '):
         CMFile=open(CMyaml)
-        remotes=yaml.load(CMFile)
+        remotes=yaml.safe_load(CMFile)
         for remote in remotes:
           filename="os/"+remote+"_config.yaml"
           remoteSlaves.append(filename)
@@ -254,7 +268,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     #go through all found remote slaves
     for CM in remoteSlaves:
       slavesFile=open(CM)
-      slaves=yaml.load(slavesFile)
+      slaves=yaml.safe_load(slavesFile)
       
       nameCM=os.path.basename(CM)[0:os.path.basename(CM).find("_")]
 

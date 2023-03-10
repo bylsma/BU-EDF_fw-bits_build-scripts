@@ -9,8 +9,9 @@ if { $argc == 2 } {
     set ip  [lindex $argv 0]
 }
 
+
 open_hw
-connect_hw_server
+connect_hw_server 
 
 if { $ip != -1 } {
     open_hw_target -xvc_url ${ip}:${port}

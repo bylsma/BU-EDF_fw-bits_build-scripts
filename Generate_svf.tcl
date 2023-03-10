@@ -10,9 +10,10 @@ source ../build-scripts/settings.tcl
 set SVF_TARGET [format "svf_top%06u" [expr {round(1000000 *rand())}]]
 
 
-
 #derived from walkthrough https://blog.xjtag.com/2016/07/creating-svf-files-using-xilinx-vivado/
-open_hw
+open_hw_manager -quiet
+
+
 if { [string length [get_hw_targets -quiet -regexp .*/${SVF_TARGET}] ]  } {
   delete_hw_target -quiet [get_hw_targets -regexp .*/${SVF_TARGET}]
 }
