@@ -1,24 +1,41 @@
-proc ProcessFileListFile {filename} {
+proc ProcessFileListFile {filename recursive_includes} {
     global apollo_root_path
     global build_name
     global buid_scripts_path
     global autogen_path
     global BD_PATH
+    global C2C
+    global C2CB
+
+    
+    puts "============================================================="
+    puts "Processing file list $filename"
+    for {set j [expr [llength $recursive_includes] -1] } {$j >= 0  } {incr j -1} {
+	puts "included from [lindex $recursive_includes] $j]"
+    }    
+    if { [llength $recursive_includes] > 30 } {
+	error "Error, recursion limit reached"	
+    }
+    
+    puts "============================================================="
+
+
     
     source ${filename}
 
     #Add vhdl files
-    for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
-	set filename "${apollo_root_path}/[lindex $vhdl_files $j]"
-	if { [file extension ${filename} ] == ".v" } {
-	    read_verilog $filename
-	    puts "Adding verilog file: $filename"
-	} else {
-	    read_vhdl $filename
-	    puts "Adding VHDL file: $filename"
-	}	
+    if { [info exists vhdl_files] == 1 } {
+	for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
+	    set filename "${apollo_root_path}/[lindex $vhdl_files $j]"
+	    if { [file extension ${filename} ] == ".v" } {
+		read_verilog $filename
+		puts "Adding verilog file: $filename"
+	    } else {
+		read_vhdl $filename
+		puts "Adding VHDL file: $filename"
+	    }	
+	}
     }
-
     #Check for syntax errors
     set syntax_check_info [check_syntax -return_string]
     #if {[string first "is not declared" ${syntax_check_info} ] > -1} {
@@ -61,30 +78,47 @@ proc ProcessFileListFile {filename} {
 
 
     #Add bd files
-    foreach bd_name [array names bd_files] {
-	set filename "${apollo_root_path}/$bd_files($bd_name)"
-	source $filename
-	puts "Running $filename"
-	read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
-	open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
-	if { [catch start_gui] == 0 } { 
-	    puts "INFO: gui successfully opened, writing block design layout"
-	    write_bd_layout -quiet -force -format svg -orientation portrait ../doc/${build_name}_${bd_name}.svg
-	    stop_gui
-	} else { 
-	    puts "INFO: gui did not open, skip write block design layout"
+    if { [info exists bd_files] == 1 } {
+	foreach bd_name [array names bd_files] {
+	    set filename "${apollo_root_path}/$bd_files($bd_name)"
+	    source $filename
+	    puts "Running $filename"
+	    read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
+	    open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
+	    if { [catch start_gui] == 0 } { 
+		puts "INFO: gui successfully opened, writing block design layout"
+		write_bd_layout -quiet -force -format svg -orientation portrait ../doc/${build_name}_${bd_name}.svg
+		stop_gui
+	    } else { 
+		puts "INFO: gui did not open, skip write block design layout"
+	    }
+	    make_wrapper -files [get_files $bd_name.bd] -top -import -force
+	    set bd_wrapper $bd_name
+	    append bd_wrapper "_wrapper.vhd"
+	    read_vhdl [get_files $bd_wrapper]
+	    #?
+	    set_property synth_checkpoint_mode None [get_files $bd_name.bd]
 	}
-	make_wrapper -files [get_files $bd_name.bd] -top -import -force
-	set bd_wrapper $bd_name
-	append bd_wrapper "_wrapper.vhd"
-	read_vhdl [get_files $bd_wrapper]       
     }
 
-
     #Add xdc files
-    for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
-	set filename "${apollo_root_path}/[lindex $xdc_files $j]"
-	read_xdc $filename
-	puts "Adding $filename"
+    if { [info exists xdc_files] == 1 } {
+	for {set j 0} {$j < [llength $xdc_files ] } {incr j} {
+	    set filename "${apollo_root_path}/[lindex $xdc_files $j]"
+	    read_xdc $filename
+	    puts "Adding $filename"
+	}	
+    }
+
+    #include files
+    if { [info exists include_files] == 1 } {
+	#setup recursion 
+	set next_list $recursive_includes	    
+	lappend next_list $filename
+
+	for {set j 0} {$j < [llength $include_files ] } {incr j} {
+	    set next_included_file "${apollo_root_path}/[lindex $include_files $j]"	    
+	    ProcessFileListFile $next_included_file $next_list 
+	}
     }
 }

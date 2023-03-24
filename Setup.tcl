@@ -37,4 +37,4 @@ read_vhdl ${timestamp_file}
 puts "Adding ${timestamp_file}"
 
 
-ProcessFileListFile ${apollo_root_path}/configs/${build_name}/files.tcl
+ProcessFileListFile ${apollo_root_path}/configs/${build_name}/files.tcl {}
