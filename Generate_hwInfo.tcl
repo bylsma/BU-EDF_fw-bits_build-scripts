@@ -34,4 +34,3 @@ write_debug_probes -force ${apollo_root_path}/bit/top_${build_name}.ltx
 if { [expr {![catch {file lstat ${apollo_root_path}/configs/${build_name}/Generate_svf.tcl finfo}]}] } {
     source  ${apollo_root_path}/configs/${build_name}/Generate_svf.tcl
 }
-
