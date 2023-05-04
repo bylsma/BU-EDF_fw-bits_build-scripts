@@ -5,6 +5,8 @@ source ${build_scripts_path}/helpers/printQuads.tcl
 #################################################################################
 set_param general.maxThreads 10
 
+set_property STEPS.SYNTH_DESIGN.ARGS.ASSERT true [get_runs synth_1]
+
 #set_property synth_checkpoint_mode None [get_files $bd_name.bd]
 generate_target all [get_files "[get_bd_designs].bd"]
 
