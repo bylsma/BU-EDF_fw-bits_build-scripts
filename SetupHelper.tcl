@@ -81,8 +81,8 @@ proc ProcessFileListFile {filename recursive_includes} {
     if { [info exists bd_files] == 1 } {
 	foreach bd_name [array names bd_files] {
 	    set filename "${apollo_root_path}/$bd_files($bd_name)"
-	    source $filename
 	    puts "Running $filename"
+	    source $filename
 	    read_bd [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
 	    open_bd_design [get_files "${apollo_root_path}/$bd_path/$bd_name/$bd_name.bd"]
 	    if { [catch start_gui] == 0 } { 
