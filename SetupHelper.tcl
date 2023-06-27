@@ -31,7 +31,7 @@ proc ProcessFileListFile {filename recursive_includes} {
 		read_verilog $filename
 		puts "Adding verilog file: $filename"
 	    } else {
-		read_vhdl $filename
+		read_vhdl -vhdl2008 $filename
 		puts "Adding VHDL file: $filename"
 	    }	
 	}
