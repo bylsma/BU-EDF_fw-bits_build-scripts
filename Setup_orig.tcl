@@ -14,7 +14,6 @@ file mkdir $outputDir
 
 set projectDir ${apollo_root_path}/proj/
 file mkdir $projectDir
-file link -symbolic LUTs ${TT_LUT_PATH}
 if {[file isfile $projectDir/$top.xpr]} {
     puts "Re-creating project file."
 } else {
@@ -25,11 +24,6 @@ set_property target_language VHDL [current_project]
 puts "Using dir $projectDir for FPGA part $FPGA_part"
 
 source ${apollo_root_path}/configs/${build_name}/files.tcl
-
-#DRP ip
-set ip_repo_path "../bd/IP ${TT_IP_REPO_PATH}"
-set_property  ip_repo_paths ${ip_repo_path}  [current_project]
-update_ip_catalog
 
 #################################################################################
 # STEP#1: setup design sources and constraints
@@ -55,12 +49,6 @@ for {set j 0} {$j < [llength $vhdl_files ] } {incr j} {
 
 }
 
-#Add vhdl 2008 files
-for {set j 0} {$j < [llength $vhdl_2008_files ] } {incr j} {
-    set filename "${apollo_root_path}/[lindex $vhdl_2008_files $j]"
-    read_vhdl -vhdl2008 $filename
-    puts "Adding $filename (VHDL 2008)"
-}
 
 #Check for syntax errors
 set syntax_check_info [check_syntax -return_string]
