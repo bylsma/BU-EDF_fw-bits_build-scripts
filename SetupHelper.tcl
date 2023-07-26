@@ -91,11 +91,14 @@ proc ProcessFileListFile {filename recursive_includes} {
 		stop_gui
 	    } else { 
 		puts "INFO: gui did not open, skip write block design layout"
-	    }
+	    }	    
 	    make_wrapper -files [get_files $bd_name.bd] -top -import -force
-	    set bd_wrapper $bd_name
-	    append bd_wrapper "_wrapper.vhd"
-	    read_vhdl [get_files $bd_wrapper]
+	    set wrapper_file [make_wrapper -files [get_files $bd_name.bd] -top -force]
+	    set wrapper_file_sane [string map {_wrapper.vhd _sane_wrapper.vhd} $wrapper_file]
+	    puts "Modifying ${bd_name} wrapper file ${wrapper_file}"
+	    set output_text [exec ../build-scripts/update_bd_wrapper.py -i $wrapper_file -o $wrapper_file_sane]
+	    puts "Adding ${wrapper_file_sane}"
+	    read_vhdl $wrapper_file_sane
 	    #?
 	    set_property synth_checkpoint_mode None [get_files $bd_name.bd]
 	}
