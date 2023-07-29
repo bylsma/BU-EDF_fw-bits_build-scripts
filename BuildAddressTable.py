@@ -200,7 +200,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     slaves=yaml.safe_load(slavesFile)
     for slave in slaves['UHAL_MODULES']:
       if "XML" in slaves['UHAL_MODULES'][slave]:
-       #get the full file path and the base path
+        #get the full file path and the base path
         module_file=os.path.abspath(slaves['UHAL_MODULES'][slave]["XML"])
         module_base_path=os.path.dirname(module_file)
 
@@ -294,7 +294,7 @@ def main(localSlavesYAML,remoteSlavesYAML,CMyaml,outputDir,topName,modulesPath):
     connFile.write('\n')
     connFile.write('<connections>\n')
     connFile.write('  <!-- be sure to use the same file in both "uri" and "address_table" -->\n')
-    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0:///fw/address_table/'+topName+'"                     address_table="file:///fw/address_table/'+topName+'" />\n')
+    connFile.write('  <connection id="test.0"        uri="uioaxi-1.0://'+topName+'"                     address_table="file://'+topName+'" />\n')
     connFile.write('</connections>\n')
     connFile.close()
 

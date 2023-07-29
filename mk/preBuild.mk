@@ -38,7 +38,9 @@ $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/config.ya
                                              -f config_$*.yaml \
                                              -m $(MAP_TEMPLATE_FILE) \
                                              $(USE_SIMPLE_PARSER) \
-                                             -g $(CONFIGS_BASE_PATH)/$*/autogen
+                                             -g $(CONFIGS_BASE_PATH)/$*/autogen \
+                                             -r ${MAKE_PATH} \
+                                             -b $*
 #
 
 $(foreach prebuild,$(CONFIGS),$(eval $(call PREBUILD_template,$(prebuild))))
