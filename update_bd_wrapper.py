@@ -204,7 +204,8 @@ def GeneratePortInterface(port_list):
                 package_to_use = pkg_type
                 
                 #search for this signal in this line
-                regex_string=r"^ *(.*)_(" + re.escape(signal) + r") *: *(in|out) *(.*);"
+#                regex_string=r"^ *(.*)_(" + re.escape(signal) + r") *: *(in|out) *(.*);"
+                regex_string=r"^ *(.*)_(" + re.escape(signal) + r") *: *(in|out) *(.*)"
                 matches=re.findall(regex_string,line,re.IGNORECASE)
                 if len(matches) == 0:
                     continue
@@ -216,7 +217,6 @@ def GeneratePortInterface(port_list):
                 signal_dir=matches[0][2].upper()
                 signal_type=matches[0][3].upper()
                 signal_width=1
-                
                 #find width of type
                 regex_string=r"std_logic_vector\s*\(\s*([0-9]+)\s*[a-z]*\s*([0-9]+)\s*\)"
                 matches=re.findall(regex_string,signal_type,re.IGNORECASE)
@@ -229,7 +229,7 @@ def GeneratePortInterface(port_list):
                 if signal_width > 32:
                     pkg_type_to_use=pkg_type["name"]+"_d64"
 
-                
+
                 #check if this is a master or endpoint interface
                 if signal_dir.upper() == pkg_type["dir"].upper():
                     #axi endpoint
@@ -257,7 +257,6 @@ def GeneratePortInterface(port_list):
         if not found:
             other_signals= other_signals + line
 
-
     #Clean up any 32/64 bit issues
     for endpoint,sub_types in axi_endpoint_signals.items():
         d64_entries=[]
@@ -278,7 +277,8 @@ def GeneratePortInterface(port_list):
                     sub_types[key+"_d64"] = sub_types[key]
                     sub_types.pop(key)
 
-        
+
+                    
     #Generate the new port map
     output_data = ""
     #process AXI connections (masters)
@@ -389,14 +389,16 @@ def ProcessVHDL(data):
                 state="update_component"
         #========================================================================
         elif state == "update_component":
+            
             matches = re.findall(r"^ *\) *; *",line,re.IGNORECASE)
             if len(matches) > 0:
                 new_file=new_file+line
-                state = "find_instance"
+                state = "find_instance"                
                 continue
             if line.count('(') - line.count(')') != 0:
                 raise Exception("component declaration has non-ending line with unbalanced parentheses.  I'm not dealing with that!: "+line)
-            dec_match = re.findall(r"^ *([a-zA-Z0-9_]*) *: *(inout|out|in) *(.*) *; *",line)
+#            dec_match = re.findall(r"^ *([a-zA-Z0-9_]*) *: *(inout|out|in) *(.*) *; *",line)
+            dec_match = re.findall(r"^ *([a-zA-Z0-9_]*) *: *(inout|out|in) *(.*) *",line)
             if len(dec_match) > 0:
                 #we have a match to a port description
                 for name in signal_rename_list.keys():
@@ -408,8 +410,10 @@ def ProcessVHDL(data):
                             if len(re.findall(r"\( *[0-9]* *(downto|to) *[0-9]* *\)",dec_match[0][2],re.IGNORECASE)) > 0:
                                 signal_rename_list[name]["source_ending"] = "(0)"
                                 break
+
                                 
-                new_file=new_file +"    %-40s : %-5s %s;\n" % ( dec_match[0][0], dec_match[0][1], dec_match[0][2] )
+#                new_file=new_file +"    %-40s : %-5s %s;\n" % ( dec_match[0][0], dec_match[0][1], dec_match[0][2] )
+                new_file=new_file +"    %-40s : %-5s %s\n" % ( dec_match[0][0], dec_match[0][1], dec_match[0][2] )
             else:
                 new_file=new_file+line
         #========================================================================
@@ -460,6 +464,7 @@ def ProcessVHDL(data):
                 if len(dec_match[0]) == 5:
                     ending=dec_match[0][4]
                 new_file=new_file +"    %-40s => %s%s\n" % ( dec_match[0][0]+source_ending, updated_name, ending)
+                
             else:
                 new_file=new_file+line
         #========================================================================

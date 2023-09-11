@@ -130,9 +130,9 @@ def LoadSlave(name,slave,aTableYAML,parentName,map_template_file,pkg_template_fi
                 xmlFileName= os.path.abspath(xmlFileName)            
             #update the address table file          
             aTableYAML[name]={
-                "UHAL_BASE":"0x"+hex(slave['UHAL_BASE'])[2:].zfill(8),
+                "UHAL_BASE": slave['UHAL_BASE'],
                 "XML": xmlFileName}
-#                "XML": os.path.abspath(slave['XML'])}
+
       
         else:
             raise RuntimeError(fullName+" has UHAL_BASE tag, but no XML tag\n")
