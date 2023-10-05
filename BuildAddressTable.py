@@ -67,7 +67,7 @@ def BuildAddressTable(fileName,top):
         if(size > idLen):
             idLen=size
         if(child.get('address')):
-            size=len(child.get('address'))
+            size=len(str(child.get('address')))
             if(size > addrLen):
                 addrLen=size
         if(child.get('module')):
@@ -98,7 +98,7 @@ def BuildAddressTable(fileName,top):
     fwinfoLen+=7+1 
   
     #reorder data by uhal address
-    top[:] = sorted(top,key=lambda child: (child.tag,child.get('address')))
+    top[:] = sorted(top,key=lambda child: (child.tag,str(child.get('address'))))
     
 
     #generate the address table
@@ -113,7 +113,7 @@ def BuildAddressTable(fileName,top):
   
         #print the address if it exists
         if(child.get('address')):
-            ATFile.write((" address=\""+child.get('address')+"\"").ljust(addrLen))
+            ATFile.write((" address=\""+str(child.get('address'))+"\"").ljust(addrLen))
         else:
             ATFILE.write(" ".ljust(addrLen))
         ATFile.write(" ")
