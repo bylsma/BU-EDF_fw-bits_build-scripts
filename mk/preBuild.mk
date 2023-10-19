@@ -27,7 +27,7 @@ endif
 
 $(ADDRESS_TABLE_CREATION_PATH)config_%.yaml : $(SLAVE_DEF_FILE_BASE)/%/config.yaml
 	@yamllint -d "{extends: default,rules: {document-start: false,trailing-spaces: false,line-length: false,empty-lines: false,colons:  {max-spaces-before: -1, max-spaces-after: -1}}}" $<
-	@rm -f $(ADDRESS_TABLE_CREATION_PATH)config*.yaml >& /dev/null
+	@rm -f $(ADDRESS_TABLE_CREATION_PATH)config_$*.yaml >& /dev/null
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)
 	@mkdir -p $(ADDRESS_TABLE_CREATION_PATH)address_tables/
 	@mkdir -p $(KERNEL_BUILD_PATH) || :
