@@ -13,6 +13,7 @@ import os
 import yaml
 sys.path.append("./regmap_helper")
 import build_vhdl_packages
+import numbers
 
 def represent_none(self, _):
     return self.represent_scalar('tag:yaml.org,2002:null', '')
@@ -128,7 +129,10 @@ def LoadSlave(name,slave,aTableYAML,parentName,map_template_file,pkg_template_fi
             print(xmlFileName)
             if xmlFileName[0] != '/':
                 xmlFileName= os.path.abspath(xmlFileName)            
-            #update the address table file          
+            #update the address table file
+            if isinstance(slave['UHAL_BASE'],numbers.Number):
+                slave['UHAL_BASE'] = "0x"+hex(slave['UHAL_BASE'])[2:].zfill(8)
+                
             aTableYAML[name]={
                 "UHAL_BASE": slave['UHAL_BASE'],
                 "XML": xmlFileName}
